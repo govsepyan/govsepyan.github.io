@@ -11,9 +11,9 @@ Jones, hello
 - [About](#about)
 - [Motivation](#motivation)
 - [Approach](#approach)
-- [Our Implementation](#our)
+- [Implementation](#implementation)
 - [Results](#results)
-- [Problems](#problems)
+- [Difficulties](#difficulties)
 - 
 - [Features](#features)
 - [Examples](#examples)
@@ -47,7 +47,7 @@ While being a useful method, supervised learning has some drawbacks. The SimSiam
 
 to be added
 
-## Our Implementation
+## Implementation
 
 to be added
 
@@ -55,7 +55,7 @@ to be added
 
 to be added
 
-## Problems Encountered Along the Way
+## Difficulties
 
 to be added
 
