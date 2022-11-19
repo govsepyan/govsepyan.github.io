@@ -11,9 +11,9 @@ Jones, hello
 - [About](#about)
 - [Motivation](#motivation)
 - [Approach](#approach)
-- [Our Implementation](#our implementation)
+- [Our Implementation](#our)
 - [Results](#results)
-- [Problems Encountered Along the Way](#problems encountered along the way)
+- [Problems](#problems)
 - 
 - [Features](#features)
 - [Examples](#examples)
