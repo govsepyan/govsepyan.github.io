@@ -10,6 +10,11 @@ Jones, hello
 ## Contents
 - [About](#about)
 - [Motivation](#motivation)
+- [Approach](#approach)
+- [Our Implementation](#our implementation)
+- [Results](#results)
+- [Problems Encountered Along the Way](#problems encountered along the way)
+- 
 - [Features](#features)
 - [Examples](#examples)
 - [Installation](#installation)
@@ -31,11 +36,28 @@ Jones, hello
 
 ## Motivation
 
-The main problem our project is trying to solve has remained unchanged. Deep learning models have achieved great performance on various tasks including image classification, detection \cite{srivastava2021comparative}, segmentation \cite{hesamian2019deep}, etc. with applications in high-impact fields such as the medical field \cite{cai2020review}. Despite this progress, most of these models still require static training, which differs from human cognition systems \cite{kudithipudi2022biological} that can train in a more dynamic manner. When introducing new data, training a network with the whole dataset -- meaning using the new and old data -- is expensive and often infeasible due to limited computation resources as well as data privacy problems; This means that requiring model training to be static is a non-trivial matter. Under the static training strategy, models need to be trained on the whole dataset at one time or else they will "forget" what they have learned abruptly upon being provided with new data; This phenomenon is termed as "catastrophic forgetting" \cite{goodfellow2013empirical,mccloskey1989catastrophic}. For example, if we train a ResNet18 \cite{he2016deep} model, termed A, on the ImageNet dataset \cite{5206848}, and we then feed it novel data with new labeled categories to get another model named B, we then find that the model B forgets the knowledge gleaned from the ImageNet dataset: i.e. the model's performance on the ImageNet dataset drops significantly.
+Deep learning models have achieved great performance on various tasks including image classification, detection \cite{srivastava2021comparative}, segmentation \cite{hesamian2019deep}, etc. with applications in high-impact fields such as the medical field \cite{cai2020review}. Despite this progress, most of these models still require static training, which differs from human cognition systems \cite{kudithipudi2022biological} that can train in a more dynamic manner. When introducing new data, training a network with the whole dataset -- meaning using the new and old data -- is expensive and often infeasible due to limited computation resources as well as data privacy problems; This means that requiring model training to be static is a non-trivial matter. Under the static training strategy, models need to be trained on the whole dataset at one time or else they will "forget" what they have learned abruptly upon being provided with new data; This phenomenon is termed as "catastrophic forgetting" \cite{goodfellow2013empirical,mccloskey1989catastrophic}. For example, if we train a ResNet18 \cite{he2016deep} model, termed A, on the ImageNet dataset \cite{5206848}, and we then feed it novel data with new labeled categories to get another model named B, we then find that the model B forgets the knowledge gleaned from the ImageNet dataset: i.e. the model's performance on the ImageNet dataset drops significantly.
 
 
+Previous works tried to address this catastrophic forgetting problem by replaying the previous data \cite{rebuffi2017icarl, rolnick2019experience}, adding a regularization term into the loss function \cite{lee2017overcoming, kirkpatrick2017overcoming}, and isolating important parameters \cite{mallya2018piggyback, mallya2018packnet}. The above methods all aim to prevent catastrophic forgetting during supervised learning. In our project, we consider a more strict situation in which we want to achieve continual learning under unsupervised learning. Unsupervised learning is another method of training machine learning models where the model is not using labeled data. Supervised learning is useful in that it can be very accurate from less data, but the downside is that this data has to be labeled accurately, which is a notoriously tedious process that can be minimized with the use of unsupervised learning models. 
 
+While being a useful method, supervised learning has some drawbacks. The SimSiam models \cite{chen2021exploring}, which take an unsupervised continual learning approach to their training, have demonstrated themselves to be very effective in classification tasks. SimSiam models take two randomly augmented views of the same image, process them through an encoder network, and then maximize the similarity between the outputs for the image augmentations\cite{chen2021exploring}. Even one of the most naive SimSiam models, FINETUNE, outperforms virtually every supervised continual learning model save for DER when benchmarked on Split-CIFAR-10, Split-CIFAR-100, and Split Tiny-ImageNet \cite{madaan2021representational}. In this paper, they list some metrics in which unsupervised continual learning models are able to outperform the supervised continual learning models. They demonstrate the greater performance in section 5.3 with notable findings such as: Demonstrated by higher CKA feature similarities and lower l2 distances, unsupervised continual learning models appear to be more robust to forgetting with more layers, unsupervised models are less prone to catastrophic forgetting when compared to their supervised counterparts, and the task loss has a flatter and smoother landscape.
 
+## Approach
+
+to be added
+
+## Our Implementation
+
+to be added
+
+## Results
+
+to be added
+
+## Problems Encountered Along the Way
+
+to be added
 
 ## Features
 
