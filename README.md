@@ -9,6 +9,7 @@ Jones, hello
 
 ## Contents
 - [About](#about)
+- [Motivation](#motivation)
 - [Features](#features)
 - [Examples](#examples)
 - [Installation](#installation)
@@ -27,6 +28,14 @@ Jones, hello
 ## About
 
 **Alembic is a starting point for [Jekyll](https://jekyllrb.com/) projects. Rather than starting from scratch, this boilerplate theme is designed to get rolling immediately. Install it, configure it, tweak it, push it.**
+
+## Motivation
+
+The main problem our project is trying to solve has remained unchanged. Deep learning models have achieved great performance on various tasks including image classification, detection \cite{srivastava2021comparative}, segmentation \cite{hesamian2019deep}, etc. with applications in high-impact fields such as the medical field \cite{cai2020review}. Despite this progress, most of these models still require static training, which differs from human cognition systems \cite{kudithipudi2022biological} that can train in a more dynamic manner. When introducing new data, training a network with the whole dataset -- meaning using the new and old data -- is expensive and often infeasible due to limited computation resources as well as data privacy problems; This means that requiring model training to be static is a non-trivial matter. Under the static training strategy, models need to be trained on the whole dataset at one time or else they will "forget" what they have learned abruptly upon being provided with new data; This phenomenon is termed as "catastrophic forgetting" \cite{goodfellow2013empirical,mccloskey1989catastrophic}. For example, if we train a ResNet18 \cite{he2016deep} model, termed A, on the ImageNet dataset \cite{5206848}, and we then feed it novel data with new labeled categories to get another model named B, we then find that the model B forgets the knowledge gleaned from the ImageNet dataset: i.e. the model's performance on the ImageNet dataset drops significantly.
+
+
+
+
 
 ## Features
 
