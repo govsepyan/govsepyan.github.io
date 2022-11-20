@@ -24,6 +24,7 @@ exclude:
 
 # 2. Installed Gems
 plugins:
+- jekyll-katex
 - jekyll-sitemap
 - jekyll-mentions
 - jekyll-paginate
