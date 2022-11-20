@@ -62,21 +62,10 @@ In our project, we want to mitigate catastrophic forgetting in self-supervised c
 Our idea for a solution to this predicament is the following: Before evaluating why the model is forgetting, we need to find out the upper bounds. To accomplish this, we need to train the whole dataset jointly with SimSiam \cite{chen2021exploring} and mask MAE \cite{he2022masked}. Following this process, we will split the various benchmarks into multiple sub-datasets; We will then split the 101 categories in the Caltech101 dataset into 10 small datasets which contain 10 or 11 classes per sub-dataset. Next, we will train the models on these ten sub-datasets sequentially, and we will evaluate their performance on the previous dataset in order to determine the level of forgetting that is taking place (e.g. one model trained on the MAE and another trained on SimSiam). We will compare their performance to conclude whether MAE is more effective in achieving continual learning. Finally, we will combine the higher-performing method with existing continual learning techniques such as semantic drift compensation \cite{yu2020semantic} and the Nearest-Mean-of-Exemplars Classification \cite{rebuffi2017icarl}.
 
 As previously explained, SimSiam unsupervised continual learning models have shown lots of promise, so we tried testing using MAE as well with two experiments: Using the base VIT model without pretraining the model, we evaluate the average accuracy and the forgetting of the models. The following two figures show that the MAE is better at both accurately classifying (represented by the first graph below) and preventing forgetting (represented by the second graph below). 
-\newpage
-\vfill
-\begin{figure}[!tbp]
-  \label{graphs}
-  \centering
-  \begin{minipage}[b]{0.4\textwidth}
-    \includegraphics[width=\textwidth]{accuracy_vs_numoftasks_simsiam_vs_mae.png}
-    \caption{Accuracy vs Number of Tasks - SimSiam vs MAE}
-  \end{minipage}
-  \hfill
-  \begin{minipage}[b]{0.4\textwidth}
-    \includegraphics[width=\textwidth]{forgetting_simsiam_vs_mae.png}
-    \caption{Forgetting of SimSiam vs MAE}
-  \end{minipage}
-\end{figure}
+
+![accuracy](/accuracy_vs_numoftasks_simsiam_vs_mae.png)
+![forgetting](/forgetting_simsiam_vs_mae.png)
+
 
 Existing approaches largely consist of contrastive learning-based or stop-gradient-based methods that can address the problem; With the goal of preventing the model from forgetting, MAE is more stable in helping the model from succumbing to pattern collapsing. Due to this capability, MAE may bring better performance in the continual learning setting. (Refer to the mathematical proof below, which demonstrates the potential increased effectiveness of using MAE)
 
