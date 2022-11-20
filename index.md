@@ -38,6 +38,107 @@ Here are a few examples of Alembic out in the wild being used in a variety of wa
 - [case2111.github.io](https://case2111.github.io/)
 - [karateca.org](https://www.karateca.org/)
 
+
+## Motivation
+
+We wanted to create an unsupervised continual learning model that could maintain its image classifcation performance on prior datasets after being trained on new datasets. Deep learning models have achieved great performance on various tasks including image classification, detection \cite{srivastava2021comparative}, segmentation \cite{hesamian2019deep}, etc. with applications in high-impact fields such as the medical field \cite{cai2020review}. Despite this progress, most of these models still require static training, which differs from human cognition systems \cite{kudithipudi2022biological} which can train in a more dynamic manner. When introducing new data, training a network on this entire dataset -- meaning using the new and old data -- is expensive and often infeasible due to limited computation resources as well as data privacy problems; This means that requiring model training to be static is very limiting. Under the static training strategy, models need to be trained on the whole dataset at one time or else they will "forget" what they have learned abruptly upon being provided with new data; This phenomenon is termed as "catastrophic forgetting" \cite{goodfellow2013empirical,mccloskey1989catastrophic}. For example, if we train a ResNet18 \cite{he2016deep} model, termed A, on the ImageNet dataset \cite{5206848}, and we then feed it novel data with new labeled categories to get another model named B, we then find that the model B forgets the knowledge gleaned from the ImageNet dataset: i.e. the model's performance on the ImageNet dataset drops significantly.
+
+Previous works tried to address this catastrophic forgetting problem by replaying the previous data \cite{rebuffi2017icarl, rolnick2019experience}, adding a regularization term into the loss function \cite{lee2017overcoming, kirkpatrick2017overcoming}, and isolating important parameters \cite{mallya2018piggyback, mallya2018packnet}. The above methods all aim to prevent catastrophic forgetting during supervised learning. In our project, we consider a more strict situation in which we want to achieve continual learning under unsupervised learning. Unsupervised learning is another method of training machine learning models where the model is not using labeled data. Supervised learning is useful in that it can be very accurate from less data, but the downside is that this data has to be labeled accurately, which is a notoriously tedious process that can be minimized with the use of unsupervised learning models. 
+
+While being a useful method, supervised learning has some drawbacks. The SimSiam models \cite{chen2021exploring}, which take an unsupervised continual learning approach to their training, have demonstrated themselves to be very effective in classification tasks. SimSiam models take two randomly augmented views of the same image, process them through an encoder network, and then maximize the similarity between the outputs for the image augmentations\cite{chen2021exploring}. Even one of the most naive SimSiam models, FINETUNE, outperforms virtually every supervised continual learning model save for DER when benchmarked on Split-CIFAR-10, Split-CIFAR-100, and Split Tiny-ImageNet \cite{madaan2021representational}. In this paper, they list some metrics in which unsupervised continual learning models are able to outperform the supervised continual learning models. They demonstrate the greater performance in section 5.3 with notable findings such as: Demonstrated by higher CKA feature similarities and lower l2 distances, unsupervised continual learning models appear to be more robust to forgetting with more layers, unsupervised models are less prone to catastrophic forgetting when compared to their supervised counterparts, and the task loss has a flatter and smoother landscape.
+
+We want to solve this problem because we would like to have a model that can learn from a variety of datasets without losing performance on previous datasets. This is important in getting closer to achieving a model that has uses outside of a very specialized use case while also minimizing manual intervention and computational costs.
+
+## Approach
+
+In our project, we want to mitigate catastrophic forgetting in self-supervised continual learning (SSL) using our own, novel approach; Our hope is that the deep learning models can remember what they have learned from their training on previous datasets. We are not the first to consider continual learning under unsupervised learning situations \cite{purushwalkam2022challenges, he2022unsupervised, munoz2019unsupervised}, but these attempts either utilize pseudo labels to train their models or contrast learning as a pretext task to achieve the goal. Since previous methods focus on how to achieve SSL via contrast learning, our methodology differs from them in that we use image reconstruction as a pretext task. More specifically, we will use Masked Autoencoders \cite{he2022masked} as our baseline, and we will explore whether the existing continual learning techniques are able to be compatible with it: Such as semantic drift compensation \cite{yu2020semantic}, the Nearest-Mean-of-Exemplars Classification \cite{rebuffi2017icarl}, etc. We hope that this approach will enable the training of models that can adapt to new tasks without forgetting their prior knowledge. 
+
+Our idea for a solution to this predicament is the following: Before evaluating why the model is forgetting, we need to find out the upper bounds. To accomplish this, we need to train the whole dataset jointly with SimSiam \cite{chen2021exploring} and mask MAE \cite{he2022masked}. Following this process, we will split the various benchmarks into multiple sub-datasets; We will then split the 101 categories in the Caltech101 dataset into 10 small datasets which contain 10 or 11 classes per sub-dataset. Next, we will train the models on these ten sub-datasets sequentially, and we will evaluate their performance on the previous dataset in order to determine the level of forgetting that is taking place (e.g. one model trained on the MAE and another trained on SimSiam). We will compare their performance to conclude whether MAE is more effective in achieving continual learning. Finally, we will combine the higher-performing method with existing continual learning techniques such as semantic drift compensation \cite{yu2020semantic} and the Nearest-Mean-of-Exemplars Classification \cite{rebuffi2017icarl}.
+
+As previously explained, SimSiam unsupervised continual learning models have shown lots of promise, so we tried testing using MAE as well with two experiments: Using the base VIT model without pretraining the model, we evaluate the average accuracy and the forgetting of the models. The following two figures show that the MAE is better at both accurately classifying (represented by the first graph below) and preventing forgetting (represented by the second graph below). 
+\newpage
+\vfill
+\begin{figure}[!tbp]
+  \label{graphs}
+  \centering
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{accuracy_vs_numoftasks_simsiam_vs_mae.png}
+    \caption{Accuracy vs Number of Tasks - SimSiam vs MAE}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{forgetting_simsiam_vs_mae.png}
+    \caption{Forgetting of SimSiam vs MAE}
+  \end{minipage}
+\end{figure}
+
+Existing approaches largely consist of contrastive learning-based or stop-gradient-based methods that can address the problem; With the goal of preventing the model from forgetting, MAE is more stable in helping the model from succumbing to pattern collapsing. Due to this capability, MAE may bring better performance in the continual learning setting. (Refer to the mathematical proof below, which demonstrates the potential increased effectiveness of using MAE)
+
+When the MAE, $f$, falls into the collapsing, which means all inputs, $x$, are mapped into the same point, $c$:
+\begin{equation}
+    f(x)=c
+\end{equation}
+where $\forall x \in \Omega$ and $\Omega$ denotes the input images space. In this problem, the input images are masked images in the MAE setting \cite{he2022masked}. Therefore, the loss of MAE can be modeled as:
+\begin{align}
+    \mathcal{L}_{MAE}(f(x), y)
+    &= \mathbb{E}[\|f(x)-y\|_2^2] \\
+    &=\mathbb{E}^2[f(x)-y] \\
+    &= \mathbb{E}^2[c-y] 
+    \label{maeLoss}
+\end{align}
+
+According to the Karush–Kuhn–Tucker condi›tions (KKT) conditions, there exists a solution $c^*$ in the Equation~\ref{maeLoss}, such that:
+$$2\mathbb{E}[c^*-y]=0$$
+Therefore, $\mathbb{E}[c^*]=\mathbb{E}[y]$
+
+Since our objective is $\displaystyle{\minimize_{f}\mathcal{L}_{MAE}(f(x), y)}$, so we can get the lower boundary of the $\mathcal{L}_{MAE}$:
+\begin{align*}
+    \mathcal{L}_{MAE}(f(x), y)
+    &= \mathbb{E}[\|f(x)-y\|_2^2] \\
+    &\geq\mathbb{E}^2[c^*-y] \\
+    &= \mathbb{E}^2[\mathbb{E}[y]-y]\\
+    &= \mathbb{E}[(\mathbb{E}[y]-y)^2]\\
+    &= \sigma^2(y)
+\end{align*}
+where the $\sigma$ denotes the variance and the y is the ground truth (original image). If the original image has a lot of variance, the lower boundary is also high. Thus, it's not easy to fall into pattern collapsing.
+
+
+Once $f$, the mask autoencoder (MAE), falls into pattern collapsing, then all inputs $x$ are mapped into the same point $c$, such that:
+$f(x)=c$   where  $x$ denotes the input image space. 
+	Therefore, the loss of the MAE can be represented by:
+$\mathcal{L}_{MAE}(f(x), y)
+    = \mathbb{E}[\|f(x)-y\|_2^2] \\$
+
+In trying to solve this older problem with a newer method, we hope it may inspire the community in the future to build off of this.
+
+	
+We will use the CUB200 \cite{wah_branson_welinder_perona_belongie_2022}, Caltech101 \cite{li_andreeto_ranzato_perona_2022}, and Flowers102 \cite{nilsback2008automated} datasets as training benchmarks, and then we will evaluate the model trained under SimSiam and MAE.
+
+In Fig~\ref{fig:timetable}, we list our time table. We began by creating the model and gathering training data on October 6, and we finished this phase around November 1. We will finish testing our method and achieving the relevant visualization before November 24, and we will finish the final report around December 10.
+
+	We set up two metrics to evaluate the performance of our solution. One is used to measure the accuracy (where a larger number is better), and the other one is used to evaluate the forgetting (where a lower number is better). 
+	
+	Let a$\tau$, i denote the test accuracy of task i after learning task T$\tau$ using a KNN on frozen pre-trained representations on task $T_{\tau}$
+
+Average accuracy: $A_\tau = \frac{1}{\tau}\sum_{i=1}^\tau a_{\tau,i}$
+
+Average Forgetting: $F=\frac{1}{T-1}\sum_{i=1}^{T-1}max_{\tau\in\{1,...,T\}}(a_{\tau,i}-a_{T,i}))$
+
+
+
+## Implementation
+
+to be added
+
+## Results
+
+to be added
+
+## Difficulties
+
+to be added
+
+
 ## Installation
 
 ### Quick setup
